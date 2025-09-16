@@ -39,6 +39,11 @@ jobs:
       run: |
         pip install -e .
         
+    - name: Run build readiness tests
+      run: |
+        python test_build_readiness.py
+        python test_integration.py
+        
     - name: Install PyInstaller and additional packaging dependencies
       run: |
         pip install pyinstaller
@@ -51,6 +56,12 @@ jobs:
     - name: Build executable with PyInstaller
       run: |
         pyinstaller whisperlivekit.spec --clean --noconfirm
+        
+    - name: Copy additional files to distribution
+      run: |
+        copy start_whisperlivekit.bat dist/WhisperLiveKit/
+        copy WINDOWS_EXECUTABLE.md "dist/WhisperLiveKit/README.txt"
+      shell: cmd
         
     - name: Test executable
       run: |
@@ -68,6 +79,7 @@ jobs:
         name: WhisperLiveKit-Windows
         path: dist/WhisperLiveKit-Windows.zip
         retention-days: 30
+        if-no-files-found: error
         
     - name: Upload to release (if tag)
       if: startsWith(github.ref, 'refs/tags/')
