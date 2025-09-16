@@ -1,0 +1,38 @@
+{
+  "name": "WhisperLiveKit Development",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/ffmpeg:1": {}
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-python.black-formatter",
+        "ms-toolsai.jupyter"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "WhisperLiveKit Server",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  
+  "postCreateCommand": "pip install -e . && echo 'WhisperLiveKit installed successfully!'",
+  
+  "remoteUser": "vscode"
+}
