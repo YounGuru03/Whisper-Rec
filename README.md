@@ -37,12 +37,33 @@ Real-time speech transcription directly to your browser, with a ready-to-use bac
 
 ### Installation & Quick Start
 
+#### Python Installation
 ```bash
 pip install whisperlivekit
 ```
 > You can also clone the repo and `pip install -e .` for the latest version.
 
+#### GitHub Codespaces (Cloud Development)
+For instant setup in the cloud:
 
+1. **Open in Codespaces**: Click the "Code" button → "Codespaces" → "Create codespace on main"
+2. **Wait for setup**: The environment will install automatically (2-3 minutes)
+3. **Start server**: Run `whisperlivekit-server --model base --language en`
+4. **Access**: Click the pop-up link or go to the "Ports" tab and open port 8000
+
+The Codespaces environment includes FFmpeg and all dependencies pre-installed.
+
+#### Windows Executable (No Python Required)
+For Windows users who prefer a standalone executable:
+
+1. **Download**: Get the latest Windows executable from [GitHub Actions](https://github.com/YounGuru03/Whisper-Rec/actions) or [Releases](https://github.com/YounGuru03/Whisper-Rec/releases)
+2. **Extract**: Unzip the downloaded file
+3. **Run**: Double-click `start_whisperlivekit.bat` or run `WhisperLiveKit.exe`
+4. **Access**: Browser opens automatically to `http://localhost:8000`
+
+📖 **Detailed instructions**: See [WINDOWS_EXECUTABLE.md](WINDOWS_EXECUTABLE.md)
+
+#### Requirements
 >  **FFmpeg is required** and must be installed before using WhisperLiveKit
 > 
 > | OS | How to install |

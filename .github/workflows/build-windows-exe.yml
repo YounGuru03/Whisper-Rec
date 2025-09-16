@@ -1,0 +1,92 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install FFmpeg
+      uses: FedericoCarboni/setup-ffmpeg@v3
+      id: setup-ffmpeg
+      with:
+        # Not strictly necessary, but it may prevent rate limit
+        # errors especially on GitHub-hosted macos machines.
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upgrade pip and install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel setuptools pyinstaller
+        
+    - name: Install project dependencies
+      run: |
+        pip install -e .
+        
+    - name: Run build readiness tests
+      run: |
+        python test_build_readiness.py
+        python test_integration.py
+        
+    - name: Install PyInstaller and additional packaging dependencies
+      run: |
+        pip install pyinstaller
+        pip install pillow  # For icon support if needed
+        
+    - name: Create PyInstaller spec file
+      run: |
+        python create_pyinstaller_spec.py
+        
+    - name: Build executable with PyInstaller
+      run: |
+        pyinstaller whisperlivekit.spec --clean --noconfirm
+        
+    - name: Copy additional files to distribution
+      run: |
+        copy start_whisperlivekit.bat dist/WhisperLiveKit/
+        copy WINDOWS_EXECUTABLE.md "dist/WhisperLiveKit/README.txt"
+      shell: cmd
+        
+    - name: Test executable
+      run: |
+        ./dist/WhisperLiveKit/WhisperLiveKit.exe --help
+      shell: bash
+      
+    - name: Create release archive
+      run: |
+        cd dist
+        powershell Compress-Archive -Path WhisperLiveKit -DestinationPath WhisperLiveKit-Windows.zip
+        
+    - name: Upload executable artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WhisperLiveKit-Windows
+        path: dist/WhisperLiveKit-Windows.zip
+        retention-days: 30
+        if-no-files-found: error
+        
+    - name: Upload to release (if tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/WhisperLiveKit-Windows.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
